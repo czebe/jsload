@@ -8,7 +8,7 @@ const load = (resource, callback) => {
     link.type = "text/css";
     link.rel = "stylesheet";
     link.crossOrigin = "anonymous";
-    link.href = url;
+    link.href = resource;
     head.appendChild(link);
   } else {
     const script = document.createElement("script");

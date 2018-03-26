@@ -1,25 +1,37 @@
 const load = (resource, callback) => {
   const head = document.head || document.getElementsByTagName("head")[0];
-  const script = document.createElement("script");
 
-  script.type = "text/javascript";
-  script.async = true;
-  script.crossOrigin = "anonymous";
-  script.src = resource;
+  if (/\.css$/i.test(resource)) {
+    // CSS file, simply append it to head
+    // We're not handling onload/onerror, since the lack of browser support
+    const link = document.createElement("link");
+    link.type = "text/css";
+    link.rel = "stylesheet";
+    link.crossOrigin = "anonymous";
+    link.href = url;
+    head.appendChild(link);
+  } else {
+    const script = document.createElement("script");
 
-  if (callback) {
-    script.onload = () => {
-      script.onerror = script.onload = null;
-      callback.call(this, null, script);
-    };
+    script.type = "text/javascript";
+    script.async = true;
+    script.crossOrigin = "anonymous";
+    script.src = resource;
 
-    script.onerror = () => {
-      script.onerror = script.onload = null;
-      callback.call(this, new Error(`Failed to load ${resource}`), script);
-    };
+    if (callback) {
+      script.onload = () => {
+        script.onerror = script.onload = null;
+        callback.call(this, null, script);
+      };
+
+      script.onerror = () => {
+        script.onerror = script.onload = null;
+        callback.call(this, new Error(`Failed to load ${resource}`), script);
+      };
+    }
+
+    head.appendChild(script);
   }
-
-  head.appendChild(script);
 };
 
 const promisedLoad = resource =>

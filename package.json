@@ -1,0 +1,41 @@
+{
+  "name": "jsload",
+  "version": "0.0.1",
+  "description": "Promise and callback based script loader",
+  "main": "index.js",
+  "repository": "git@github.com:czebe/jsload.git",
+  "author": "czebemarci@gmail.com",
+  "license": "MIT",
+  "files": [
+    "index.js",
+    "dist"
+  ],
+  "scripts": {
+    "prettier": "prettier --write 'src/**/*.js' 'test/**/*.js'",
+    "lint": "eslint src/ test/",
+    "build": "babel src -d dist",
+    "test": "mocha -r jsdom-global/register -r @babel/register 'test/**/*.spec.js'",
+    "patch": "npm version patch && npm publish",
+    "minor": "npm version minor && npm publish",
+    "major": "npm version major && npm publish",
+    "prepublish": "npm run lint && npm test && npm run build",
+    "postpublish": "git push origin master --tags",
+    "prepare": "npm run build"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.0.0-beta.42",
+    "@babel/core": "^7.0.0-beta.42",
+    "@babel/preset-env": "^7.0.0-beta.42",
+    "@babel/register": "^7.0.0-beta.42",
+    "babel-eslint": "^8.2.2",
+    "chai": "^4.1.2",
+    "eslint": "^4.19.1",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-prettier": "^2.6.0",
+    "jsdom": "^11.6.2",
+    "jsdom-global": "^3.0.2",
+    "mocha": "^5.0.5",
+    "prettier": "^1.11.1",
+    "sinon": "^4.4.8"
+  }
+}

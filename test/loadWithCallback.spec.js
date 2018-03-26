@@ -16,7 +16,7 @@ describe("Load resource with callback", () => {
 
   it("should load requested resource and execute `callback` function", () => {
     const callbackSpy = sinon.spy();
-    jsload(["http://localhost/foo.js"], null, callbackSpy);
+    jsload(["http://localhost/foo.js"], [], null, callbackSpy);
 
     const injected = document.getElementsByTagName("script")[0];
     injected.onload();
@@ -32,6 +32,7 @@ describe("Load resource with callback", () => {
         "http://localhost/foo2.js",
         "http://localhost/foo3.js"
       ],
+      [],
       null,
       callbackSpy
     );
@@ -48,7 +49,7 @@ describe("Load resource with callback", () => {
 
   it("should throw an error", () => {
     expect(() => {
-      jsload(["http://localhost/foo.js"], null, () => {});
+      jsload(["http://localhost/foo.js"], [], null, () => {});
       const injected = document.getElementsByTagName("script")[0];
       injected.onerror();
     }).to.throw();

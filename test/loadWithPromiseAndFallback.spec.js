@@ -15,7 +15,7 @@ describe("Load resources with Promise and fallbacks", () => {
 
   it("should load fallback for requested resource and resolve the promise", done => {
     const fallback = "http://localhost/foo2.js";
-    jsload(["http://localhost/foo.js"], null, null, [fallback]).then(result => {
+    jsload(["http://localhost/foo.js"], [fallback]).then(result => {
       expect(result.length).to.equal(1);
       expect(result[0].src).to.equal(fallback);
       done();
@@ -36,9 +36,10 @@ describe("Load resources with Promise and fallbacks", () => {
     const fallback1 = "http://localhost/foo1.js";
     const fallback2 = "http://localhost/foo2.js";
     const fallback3 = "http://localhost/foo3.js";
-    jsload(["http://localhost/foo.js"], null, null, [
-      [fallback1, fallback2, fallback3]
-    ]).then(result => {
+    jsload(
+      ["http://localhost/foo.js"],
+      [[fallback1, fallback2, fallback3]]
+    ).then(result => {
       expect(result.length).to.equal(1);
       expect(result[0].src).to.equal(fallback3);
       done();

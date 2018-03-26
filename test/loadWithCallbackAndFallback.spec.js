@@ -16,9 +16,12 @@ describe("Load resources with callback and fallbacks", () => {
 
   it("should load requested fallback resource and execute `callback` function", () => {
     const callbackSpy = sinon.spy();
-    jsload(["http://localhost/foo.js"], null, callbackSpy, [
-      "http://localhost/foo2.js"
-    ]);
+    jsload(
+      ["http://localhost/foo.js"],
+      ["http://localhost/foo2.js"],
+      null,
+      callbackSpy
+    );
 
     const injected = document.getElementsByTagName("script")[0];
     injected.onerror();

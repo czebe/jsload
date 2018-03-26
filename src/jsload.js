@@ -42,7 +42,7 @@ const promisedLoadWithFallbacks = resources =>
     Promise.reject()
   );
 
-const jsload = (resources, promise, callback, fallbacks) => {
+const jsload = (resources, fallbacks, promise, callback) => {
   if (!resources) {
     throw new TypeError("`resources` is missing");
   }

@@ -1,4 +1,4 @@
-const load = (resource, callback) => {
+const load = (resource, callback, timeout) => {
   const head = document.head || document.getElementsByTagName("head")[0];
 
   if (/\.css$/i.test(resource)) {
@@ -19,14 +19,28 @@ const load = (resource, callback) => {
     script.src = resource;
 
     if (callback) {
+      let timer;
+      if (timeout) {
+        // Create a timeout
+        timer = setTimeout(() => {
+          script.onerror = script.onload = null;
+          callback.call(
+            this,
+            new Error(`Timeout occured loading: ${resource}`)
+          );
+        }, timeout);
+      }
+
       script.onload = () => {
+        if (timer) clearTimeout(timer);
         script.onerror = script.onload = null;
         callback.call(this, null, script);
       };
 
       script.onerror = () => {
+        if (timer) clearTimeout(timer);
         script.onerror = script.onload = null;
-        callback.call(this, new Error(`Failed to load ${resource}`), script);
+        callback.call(this, new Error(`Failed to load: ${resource}`));
       };
     }
 
@@ -54,7 +68,8 @@ const promisedLoadWithFallbacks = resources =>
     Promise.reject()
   );
 
-const jsload = (resources, fallbacks, promise, callback) => {
+// TODO: test timeouts
+const jsload = (resources, fallbacks, promise, callback, timeout = 8000) => {
   if (!resources) {
     throw new TypeError("`resources` is missing");
   }
@@ -88,7 +103,11 @@ const jsload = (resources, fallbacks, promise, callback) => {
     const loadResult = (err, result, index) => {
       if (err) {
         if (index >= 0 && fallbacks && fallbacks[index]) {
-          load(fallbacks[index], (err, result) => loadResult(err, result));
+          load(
+            fallbacks[index],
+            (err, result) => loadResult(err, result),
+            timeout
+          );
         } else {
           throw err;
         }
@@ -101,10 +120,12 @@ const jsload = (resources, fallbacks, promise, callback) => {
     };
 
     urls.forEach((url, index) =>
-      load(url, (err, result) => loadResult(err, result, index))
+      load(url, (err, result) => loadResult(err, result, index), timeout)
     );
   } else {
     // Promise based loading
+    // TODO: Add timeout to promises as well
+    // https://gist.github.com/davej/728b20518632d97eef1e5a13bf0d05c7
     const deferreds = promise ? [].concat(promise) : [];
 
     urls.forEach((url, index) => {

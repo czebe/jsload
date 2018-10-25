@@ -17,8 +17,8 @@ describe("Load resources with callback and fallbacks", () => {
   it("should load requested fallback resource and execute `callback` function", () => {
     const callbackSpy = sinon.spy();
     jsload(
-      ["http://localhost/foo.js"],
-      ["http://localhost/foo2.js"],
+      ["http://localhost/foo_load_with_callback_and_fallback_1.js"],
+      ["http://localhost/foo_load_with_callback_and_fallback_1_fb.js"],
       null,
       callbackSpy
     );
@@ -36,8 +36,8 @@ describe("Load resources with callback and fallbacks", () => {
     const clock = sinon.useFakeTimers();
     const callbackSpy = sinon.spy();
     jsload(
-      ["http://localhost/foo_primary.js"],
-      ["http://localhost/foo_fallback.js"],
+      ["http://localhost/foo_load_with_callback_and_fallback_2.js"],
+      ["http://localhost/foo_load_with_callback_and_fallback_2_fb.js"],
       null,
       callbackSpy,
       1000

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+
+  <script src="../dist/jsload.js"></script>
+
+  <script>
+
+    jsload.default(
+      "https://foo.com/foo.js",
+      null,
+      null,
+      (err, result) => {
+        // CDN.polyfill
+        console.log(
+          `[loader.js] - Polyfill.io error, use fallback source. ${err}`
+        );
+      },
+      10
+    );
+
+  </script>
+</head>
+<body>
+
+</body>
+</html>

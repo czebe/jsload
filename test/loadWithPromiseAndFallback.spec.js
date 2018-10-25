@@ -14,8 +14,12 @@ describe("Load resources with Promise and fallbacks", () => {
   });
 
   it("should load fallback for requested resource and resolve the promise", done => {
-    const fallback = "http://localhost/foo2.js";
-    jsload(["http://localhost/foo.js"], [fallback]).then(result => {
+    const fallback =
+      "http://localhost/foo_load_with_promise_and_callback_1_fallback.js";
+    jsload(
+      ["http://localhost/foo_load_with_promise_and_callback_1.js"],
+      [fallback]
+    ).then(result => {
       expect(result.length).to.equal(1);
       expect(result[0].src).to.equal(fallback);
       done();
@@ -33,11 +37,14 @@ describe("Load resources with Promise and fallbacks", () => {
   });
 
   it("should try to load multiple fallbacks for requested resource and resolve the promise", done => {
-    const fallback1 = "http://localhost/foo1.js";
-    const fallback2 = "http://localhost/foo2.js";
-    const fallback3 = "http://localhost/foo3.js";
+    const fallback1 =
+      "http://localhost/foo_load_with_promise_and_callback_2_fb.js";
+    const fallback2 =
+      "http://localhost/foo_load_with_promise_and_callback_3_fb.js";
+    const fallback3 =
+      "http://localhost/foo_load_with_promise_and_callback_4_fb.js";
     jsload(
-      ["http://localhost/foo.js"],
+      ["http://localhost/foo_load_with_promise_and_callback_2.js"],
       [[fallback1, fallback2, fallback3]]
     ).then(result => {
       expect(result.length).to.equal(1);
@@ -68,8 +75,8 @@ describe("Load resources with Promise and fallbacks", () => {
 
   it("should load the fallback resource when a timeout occurs", done => {
     jsload(
-      ["http://localhost/foo_primary.js"],
-      ["http://localhost/foo_secondary.js"],
+      ["http://localhost/foo_load_with_promise_and_callback_3.js"],
+      ["http://localhost/foo_load_with_promise_and_callback_3_fallback.js"],
       null,
       null,
       500
@@ -77,8 +84,6 @@ describe("Load resources with Promise and fallbacks", () => {
       expect(result).to.not.be.undefined;
       done();
     });
-
-    // clock.tick(1001);
 
     setTimeout(() => {
       setTimeout(() => {

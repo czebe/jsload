@@ -16,7 +16,12 @@ describe("Load resource with callback", () => {
 
   it("should load requested resource and execute `callback` function", () => {
     const callbackSpy = sinon.spy();
-    jsload(["http://localhost/foo.js"], [], null, callbackSpy);
+    jsload(
+      ["http://localhost/foo_load_with_callback_1.js"],
+      [],
+      null,
+      callbackSpy
+    );
 
     const injected = document.getElementsByTagName("script")[0];
     injected.onload();
@@ -28,9 +33,9 @@ describe("Load resource with callback", () => {
     const callbackSpy = sinon.spy();
     jsload(
       [
-        "http://localhost/foo1.js",
-        "http://localhost/foo2.js",
-        "http://localhost/foo3.js"
+        "http://localhost/foo_load_with_callback_2.js",
+        "http://localhost/foo_load_with_callback_3.js",
+        "http://localhost/foo_load_with_callback_4.js"
       ],
       [],
       null,
@@ -47,20 +52,31 @@ describe("Load resource with callback", () => {
     expect(callbackSpy.calledOnce).to.be.true;
   });
 
-  it("should throw an error when onError event happens", () => {
-    expect(() => {
-      jsload(["http://localhost/foo.js"], [], null, () => {});
-      const injected = document.getElementsByTagName("script")[0];
-      injected.onerror();
-    }).to.throw();
+  it("should execute callback with error when script onError happens", () => {
+    const callbackSpy = sinon.spy();
+    jsload(
+      ["http://localhost/foo_load_with_callback_5.js"],
+      [],
+      null,
+      callbackSpy
+    );
+    const injected = document.getElementsByTagName("script")[0];
+    injected.onerror();
+    expect(callbackSpy.getCall(0).args[0]).to.be.an.instanceOf(Error);
   });
 
-  it("should throw an error when a timeout occurs", () => {
+  it("should execute callback with error when a timeout occurs", () => {
     const clock = sinon.useFakeTimers();
-    expect(() => {
-      jsload(["http://localhost/foo.js"], [], null, () => {}, 1000);
-      clock.tick(1001);
-    }).to.throw();
+    const callbackSpy = sinon.spy();
+    jsload(
+      ["http://localhost/foo_load_with_callback_6.js"],
+      [],
+      null,
+      callbackSpy,
+      1000
+    );
+    clock.tick(1001);
+    expect(callbackSpy.getCall(0).args[0]).to.be.an.instanceOf(Error);
     clock.restore();
   });
 });

@@ -15,7 +15,7 @@ describe("Load resources with Promise", () => {
   });
 
   it("should load requested resource and resolve the promise", done => {
-    jsload(["http://localhost/foo.js"]).then(result => {
+    jsload(["http://localhost/foo_load_with_promise_1.js"]).then(result => {
       expect(result.length).to.equal(1);
       done();
     });
@@ -28,9 +28,9 @@ describe("Load resources with Promise", () => {
 
   it("should load multiple resources and resolve the promise", done => {
     jsload([
-      "http://localhost/foo.js",
-      "http://localhost/foo2.js",
-      "http://localhost/foo3.js"
+      "http://localhost/foo_load_with_promise_2.js",
+      "http://localhost/foo_load_with_promise_3.js",
+      "http://localhost/foo_load_with_promise_4.js"
     ]).then(result => {
       expect(result.length).to.equal(3);
       done();
@@ -48,12 +48,18 @@ describe("Load resources with Promise", () => {
 
   it("should reject the Promise when a timeout occurs", done => {
     const clock = sinon.useFakeTimers();
-    jsload("http://localhost/foo.js", null, null, null, 1000).catch(err => {
+    jsload(
+      "http://localhost/foo_load_with_promise_5.js",
+      null,
+      null,
+      null,
+      1000
+    ).catch(err => {
       expect(err).to.not.be.undefined;
+      clock.restore();
       done();
     });
 
     clock.tick(1001);
-    clock.restore();
   });
 });

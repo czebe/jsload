@@ -108,7 +108,7 @@ const jsload = (resources, fallbacks, promise, callback, timeout = 8000) => {
             timeout
           );
         } else {
-          throw err;
+          callback(err);
         }
       } else {
         loadCount++;

@@ -1,7 +1,6 @@
 import jsdom from "jsdom-global";
 import { expect } from "chai";
 import jsload from "../src/jsload";
-import sinon from "sinon";
 
 describe("Load resources with Promise and fallbacks", () => {
   let cleanup;

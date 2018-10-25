@@ -50,22 +50,17 @@ const load = (resource, callback, timeout) => {
 
 const promisedLoad = (resource, timeout) =>
   new Promise((resolve, reject) => {
-    const timer = setTimeout(() => {
-      reject(
-        new Error(
-          `[jsload.promisedLoad()] - Requesting resource timed out: ${resource}`
-        )
-      );
-    }, timeout);
-
-    load(resource, (err, result, timeout) => {
-      clearTimeout(timer);
-      if (err) {
-        reject(err);
-      } else if (result) {
-        resolve(result);
-      }
-    });
+    load(
+      resource,
+      (err, result) => {
+        if (err) {
+          reject(err);
+        } else if (result) {
+          resolve(result);
+        }
+      },
+      timeout
+    );
   });
 
 const promisedLoadWithFallbacks = (resources, timeout) =>

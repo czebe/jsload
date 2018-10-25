@@ -33,14 +33,16 @@ const load = (resource, callback, timeout) => {
 
       script.onload = () => {
         if (timer) clearTimeout(timer);
-        script.onerror = script.onload = null;
         callback.call(this, null, script);
+        script.onerror = script.onload = null;
+        return true;
       };
 
       script.onerror = () => {
         if (timer) clearTimeout(timer);
-        script.onerror = script.onload = null;
         callback.call(this, new Error(`Failed to load: ${resource}`));
+        script.onerror = script.onload = null;
+        return false;
       };
     }
 

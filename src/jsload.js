@@ -46,10 +46,10 @@ const load = (resource, callback, timeout) => {
 
     try {
       head.appendChild(script);
-    } catch {
+    } catch (err) {
       callback.call(
         this,
-        new Error(`Error appending script tag for: ${resource}`)
+        new Error(`Error appending script tag for: ${resource}. {err}`)
       );
     }
   }

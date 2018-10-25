@@ -44,7 +44,14 @@ const load = (resource, callback, timeout) => {
       };
     }
 
-    head.appendChild(script);
+    try {
+      head.appendChild(script);
+    } catch {
+      callback.call(
+        this,
+        new Error(`Error appending script tag for: ${resource}`)
+      );
+    }
   }
 };
 

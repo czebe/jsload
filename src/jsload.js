@@ -11,50 +11,38 @@ const load = (resource, callback, timeout) => {
     link.href = resource;
     head.appendChild(link);
   } else {
-    try {
-      const script = document.createElement("script");
-      script.type = "text/javascript";
-      script.async = true;
-      script.crossOrigin = "anonymous";
-      script.src = resource;
+    const script = document.createElement("script");
+    script.type = "text/javascript";
+    script.async = true;
+    script.crossOrigin = "anonymous";
+    script.src = resource;
 
-      if (callback) {
-        let timer;
-        if (timeout) {
-          // Create a timeout
-          timer = setTimeout(() => {
-            script.onerror = script.onload = null;
-            callback.call(
-              this,
-              new Error(`Timeout occured loading: ${resource}`)
-            );
-          }, timeout);
-        }
-
-        script.onload = () => {
-          if (timer) clearTimeout(timer);
+    if (callback) {
+      let timer;
+      if (timeout) {
+        // Create a timeout
+        timer = setTimeout(() => {
           script.onerror = script.onload = null;
-          callback.call(this, null, script);
-          return true;
-        };
-
-        script.onerror = () => {
-          if (timer) clearTimeout(timer);
-          script.onerror = script.onload = null;
-          callback.call(this, new Error(`Failed to load: ${resource}`));
-          return false;
-        };
+          callback(new Error(`Timeout occured loading: ${resource}`));
+        }, timeout);
       }
 
-      head.appendChild(script);
-    } catch (err) {
-      if (callback) {
-        callback.call(
-          this,
-          new Error(`Error creating script tag for: ${resource}. ${err}`)
-        );
-      }
+      script.onload = () => {
+        if (timer) clearTimeout(timer);
+        script.onerror = script.onload = null;
+        callback(null, script);
+        return true;
+      };
+
+      script.onerror = () => {
+        if (timer) clearTimeout(timer);
+        script.onerror = script.onload = null;
+        callback(new Error(`Failed to load: ${resource}`));
+        return false;
+      };
     }
+
+    head.appendChild(script);
   }
 };
 
@@ -125,7 +113,7 @@ const jsload = (resources, fallbacks, promise, callback, timeout = 8000) => {
       } else {
         loadCount++;
         if (loadCount === urls.length) {
-          callback.call(this, result); // All scripts loaded
+          callback(null, result); // All scripts loaded
         }
       }
     };

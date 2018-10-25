@@ -11,48 +11,49 @@ const load = (resource, callback, timeout) => {
     link.href = resource;
     head.appendChild(link);
   } else {
-    const script = document.createElement("script");
+    try {
+      const script = document.createElement("script");
+      script.type = "text/javascript";
+      script.async = true;
+      script.crossOrigin = "anonymous";
+      script.src = resource;
 
-    script.type = "text/javascript";
-    script.async = true;
-    script.crossOrigin = "anonymous";
-    script.src = resource;
+      if (callback) {
+        let timer;
+        if (timeout) {
+          // Create a timeout
+          timer = setTimeout(() => {
+            script.onerror = script.onload = null;
+            callback.call(
+              this,
+              new Error(`Timeout occured loading: ${resource}`)
+            );
+          }, timeout);
+        }
 
-    if (callback) {
-      let timer;
-      if (timeout) {
-        // Create a timeout
-        timer = setTimeout(() => {
+        script.onload = () => {
+          if (timer) clearTimeout(timer);
           script.onerror = script.onload = null;
-          callback.call(
-            this,
-            new Error(`Timeout occured loading: ${resource}`)
-          );
-        }, timeout);
+          callback.call(this, null, script);
+          return true;
+        };
+
+        script.onerror = () => {
+          if (timer) clearTimeout(timer);
+          script.onerror = script.onload = null;
+          callback.call(this, new Error(`Failed to load: ${resource}`));
+          return false;
+        };
       }
 
-      script.onload = () => {
-        if (timer) clearTimeout(timer);
-        callback.call(this, null, script);
-        script.onerror = script.onload = null;
-        return true;
-      };
-
-      script.onerror = () => {
-        if (timer) clearTimeout(timer);
-        callback.call(this, new Error(`Failed to load: ${resource}`));
-        script.onerror = script.onload = null;
-        return false;
-      };
-    }
-
-    try {
       head.appendChild(script);
     } catch (err) {
-      callback.call(
-        this,
-        new Error(`Error appending script tag for: ${resource}. {err}`)
-      );
+      if (callback) {
+        callback.call(
+          this,
+          new Error(`Error creating script tag for: ${resource}. ${err}`)
+        );
+      }
     }
   }
 };

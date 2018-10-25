@@ -31,4 +31,25 @@ describe("Load resources with callback and fallbacks", () => {
 
     expect(callbackSpy.calledOnce).to.be.true;
   });
+
+  it("should load fallback resource when a timeout occurs", () => {
+    const clock = sinon.useFakeTimers();
+    const callbackSpy = sinon.spy();
+    jsload(
+      ["http://localhost/foo_primary.js"],
+      ["http://localhost/foo_fallback.js"],
+      null,
+      callbackSpy,
+      1000
+    );
+
+    clock.tick(1001);
+
+    const injected2 = document.getElementsByTagName("script")[1];
+    injected2.onload();
+
+    expect(callbackSpy.calledOnce).to.be.true;
+
+    clock.restore();
+  });
 });

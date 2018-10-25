@@ -1,6 +1,7 @@
 import jsdom from "jsdom-global";
 import { expect } from "chai";
 import jsload from "../src/jsload";
+import sinon from "sinon";
 
 describe("Load resources with Promise", () => {
   let cleanup;
@@ -43,5 +44,16 @@ describe("Load resources with Promise", () => {
       injected1.onload();
       injected2.onload();
     }, 0);
+  });
+
+  it("should reject the Promise when a timeout occurs", done => {
+    const clock = sinon.useFakeTimers();
+    jsload("http://localhost/foo.js", null, null, null, 1000).catch(err => {
+      expect(err).to.not.be.undefined;
+      done();
+    });
+
+    clock.tick(1001);
+    clock.restore();
   });
 });

@@ -47,11 +47,20 @@ describe("Load resource with callback", () => {
     expect(callbackSpy.calledOnce).to.be.true;
   });
 
-  it("should throw an error", () => {
+  it("should throw an error when onError event happens", () => {
     expect(() => {
       jsload(["http://localhost/foo.js"], [], null, () => {});
       const injected = document.getElementsByTagName("script")[0];
       injected.onerror();
     }).to.throw();
+  });
+
+  it("should throw an error when a timeout occurs", () => {
+    const clock = sinon.useFakeTimers();
+    expect(() => {
+      jsload(["http://localhost/foo.js"], [], null, () => {}, 1000);
+      clock.tick(1001);
+    }).to.throw();
+    clock.restore();
   });
 });

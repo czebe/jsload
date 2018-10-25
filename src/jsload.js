@@ -48,27 +48,33 @@ const load = (resource, callback, timeout) => {
   }
 };
 
-const promisedLoad = resource =>
-  new Promise((resolve, reject) =>
-    load(resource, (err, result) => {
+const promisedLoad = (resource, timeout) =>
+  new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(
+        new Error(
+          `[jsload.promisedLoad()] - Requesting resource timed out: ${resource}`
+        )
+      );
+    }, timeout);
+
+    load(resource, (err, result, timeout) => {
+      clearTimeout(timer);
       if (err) {
         reject(err);
       } else if (result) {
         resolve(result);
-      } else {
-        resolve();
       }
-    })
-  );
+    });
+  });
 
-const promisedLoadWithFallbacks = resources =>
+const promisedLoadWithFallbacks = (resources, timeout) =>
   resources.reduce(
     (previousLoader, resource) =>
-      previousLoader.then(null, () => promisedLoad(resource)),
+      previousLoader.then(null, () => promisedLoad(resource, timeout)),
     Promise.reject()
   );
 
-// TODO: test timeouts
 const jsload = (resources, fallbacks, promise, callback, timeout = 8000) => {
   if (!resources) {
     throw new TypeError("`resources` is missing");
@@ -135,9 +141,9 @@ const jsload = (resources, fallbacks, promise, callback, timeout = 8000) => {
           typeof fallbacks[index] === "string"
             ? [fallbacks[index]]
             : fallbacks[index];
-        deferred = promisedLoadWithFallbacks([url, ...fallbackUrls]);
+        deferred = promisedLoadWithFallbacks([url, ...fallbackUrls], timeout);
       } else {
-        deferred = promisedLoad(url);
+        deferred = promisedLoad(url, timeout);
       }
       deferreds.push(deferred);
     });

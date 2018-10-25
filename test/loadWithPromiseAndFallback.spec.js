@@ -1,6 +1,7 @@
 import jsdom from "jsdom-global";
 import { expect } from "chai";
 import jsload from "../src/jsload";
+import sinon from "sinon";
 
 describe("Load resources with Promise and fallbacks", () => {
   let cleanup;
@@ -64,5 +65,27 @@ describe("Load resources with Promise and fallbacks", () => {
         }, 0);
       }, 0);
     }, 0);
+  });
+
+  it("should load the fallback resource when a timeout occurs", done => {
+    jsload(
+      ["http://localhost/foo_primary.js"],
+      ["http://localhost/foo_secondary.js"],
+      null,
+      null,
+      500
+    ).then(result => {
+      expect(result).to.not.be.undefined;
+      done();
+    });
+
+    // clock.tick(1001);
+
+    setTimeout(() => {
+      setTimeout(() => {
+        const injected1 = document.getElementsByTagName("script")[1];
+        injected1.onload();
+      }, 0);
+    }, 500);
   });
 });
